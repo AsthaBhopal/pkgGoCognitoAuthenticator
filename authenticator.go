@@ -37,6 +37,12 @@ func (c *CognitoAuth) GetUserGroup(ctx context.Context, userName string, limit i
 			UserPoolId: &c.poolId,
 			Username:   &userName,
 			Limit:      &l,
+		})
+	} else {
+		return c.client.AdminListGroupsForUser(ctx, &cognitoidentityprovider.AdminListGroupsForUserInput{
+			UserPoolId: &c.poolId,
+			Username:   &userName,
+			Limit:      &l,
 			NextToken:  &nextToken,
 		})
 	}
