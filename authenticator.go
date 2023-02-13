@@ -12,6 +12,8 @@ type CognitoAuth struct {
 	client *cognitoidentityprovider.Client
 }
 
+const MAX_GROUPS_LIMIT = 60
+
 type InitializeParams struct {
 	PoolId string
 	Config aws.Config
@@ -30,10 +32,13 @@ func (c *CognitoAuth) AuthenticateUser(ctx context.Context, token string) (*cogn
 
 func (c *CognitoAuth) GetUserGroup(ctx context.Context, userName string, limit int, nextToken string) (*cognitoidentityprovider.AdminListGroupsForUserOutput, error) {
 	l := int32(limit)
-	return c.client.AdminListGroupsForUser(ctx, &cognitoidentityprovider.AdminListGroupsForUserInput{
-		UserPoolId: &c.poolId,
-		Username:   &userName,
-		Limit:      &l,
-		NextToken:  &nextToken,
-	})
+	if nextToken == "" {
+		return c.client.AdminListGroupsForUser(ctx, &cognitoidentityprovider.AdminListGroupsForUserInput{
+			UserPoolId: &c.poolId,
+			Username:   &userName,
+			Limit:      &l,
+			NextToken:  &nextToken,
+		})
+	}
+
 }
